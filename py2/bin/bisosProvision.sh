@@ -71,7 +71,7 @@ function vis_examples {
     visLibExamplesOutput ${G_myName} 
   cat  << _EOF_
 $( examplesSeperatorTopLabel "${G_myName}" )
-$( examplesSeperatorChapter "BISOS Provisioning" )
+$( examplesSeperatorChapter "BISOS Provisioning:: Standalone ICM Sets Up Selfcontained ICMs" )
 $( examplesSeperatorSection "Create bisosProvision base directories" )
 ${G_myName} ${extraInfo} -i gitBinsPrep
 ${G_myName} ${extraInfo} -i gitPrep
@@ -79,6 +79,7 @@ ${G_myName} ${extraInfo} -p rootBase=/opt -i provisionerRepoClone
 ${G_myName} ${extraInfo} -p rootBase=/opt -i provisionerBasesPrep
 ${G_myName} ${extraInfo} -i provisionerRepoClone
 ${G_myName} ${extraInfo} -i provisionerBasesPrep
+$( examplesSeperatorChapter "BISOS Provisioning:: Selfcontained ICMs Invocations" )
 $( examplesSeperatorSection "Create Accounts" )
 ${G_myName} ${extraInfo} -i updateAccts
 $( examplesSeperatorSection "Create BisosProv Virtenvs" )
@@ -142,11 +143,23 @@ _EOF_
 
     opDo modulePrep
 
-    local gitReposBase="${provisionerBase}/gitRepos"
+    local currentUser=$(id -nu)
+    local currentGroup=$(id -ng)
     
-    opDo sudo  mkdir -p "${gitReposBase}"
+    lpDo sudo  mkdir -p "${provisionerBase}"
 
-    inBaseDirDo "${gitReposBase}" sudo git clone https://github.com/bxGenesis/provisioners.git
+    lpDo sudo chown ${currentUser}:${currentGroup} "${provisionerBase}"
+
+    local gitReposAnonBase="${provisionerBase}/gitReposAnon"
+    local gitReposBase="${provisionerBase}/gitRepos"    
+    
+    lpDo mkdir -p "${gitReposAnonBase}"
+    
+    inBaseDirDo "${gitReposAnonBase}" sudo git clone https://github.com/bxGenesis/provisioners.git
+
+    lpDo mkdir -p "${gitReposBase}"
+
+    lpDo ln -s "${gitReposAnonBase}/provisioners" "${gitReposBase}"
     
     lpReturn
 }
