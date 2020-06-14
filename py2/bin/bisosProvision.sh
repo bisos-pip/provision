@@ -142,7 +142,7 @@ _EOF_
 
     opDo modulePrep
 
-    local gitReposBase="$provisionerBase}/gitRepos"
+    local gitReposBase="${provisionerBase}/gitRepos"
     
     opDo sudo  mkdir -p "${gitReposBase}"
 
@@ -162,7 +162,7 @@ _EOF_
     modulePrep
 
     # /opt/bisosProvisioner}/gitRepos/provisioners
-    local provisionersBase="$provisionerBase}/gitRepos/provisioners"
+    local provisionersBase="${provisionerBase}/gitRepos/provisioners"
 
     if [ -d "${provisionersBase}" ] ; then
 	if [ "${beSilent}" != "true" ] ; then  
@@ -205,7 +205,7 @@ _EOF_
     opDo provisionersPrep
 
     # /opt/bisosProvisioner}/gitRepos/provisioners/bin/bisosAccounts.sh
-    local bisosAccountsProg="$provisionerBase}/gitRepos/provisioners/bin/bisosAccounts.sh"
+    local bisosAccountsProg="${provisionerBase}/gitRepos/provisioners/bin/bisosAccounts.sh"
     opDo vis_provisionerBasesPrep    
 
     if [ ! -x "${bisosAccountsProg}" ] ; then
@@ -228,7 +228,7 @@ _EOF_
     opDo provisionersPrep
 
     # /opt/bisosProvisioner}/gitRepos/provisioners/bin/bisosBaseDirsSetup.sh
-    local bisosProg="$provisionerBase}/gitRepos/provisioners/bin/bisosBaseDirsSetup.sh"
+    local bisosProg="${provisionerBase}/gitRepos/provisioners/bin/bisosBaseDirsSetup.sh"
 
     if [ ! -x "${bisosProg}" ] ; then
 	EH_problem "Missing ${bisosProg}"
@@ -251,7 +251,7 @@ _EOF_
     opDo provisionersPrep
 
     # /opt/bisosProvisioner}/gitRepos/provisioners/bin/bisosBaseDirsSetup.sh
-    local bisosProg="$provisionerBase}/gitRepos/provisioners/bin/bisosBaseDirsSetup.sh"
+    local bisosProg="${provisionerBase}/gitRepos/provisioners/bin/bisosBaseDirsSetup.sh"
 
     if [ ! -x "${bisosProg}" ] ; then
 	EH_problem "Missing ${bisosProg}"
