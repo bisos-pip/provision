@@ -19,6 +19,12 @@ fi
 
 ####+END:
 
+# /opt/bisosProvisioner/gitRepos/provisioners/bin/bisosProvisioners_lib.sh
+if [ -f /opt/bisosProvisioner/gitRepos/provisioners/bin/bisosProvisioners_lib.sh ] ; then
+    . /opt/bisosProvisioner/gitRepos/provisioners/bin/bisosProvisioners_lib.sh
+fi
+
+
 #mainRepoRoot=$( cd $(dirname $0); git rev-parse --show-toplevel 2> /dev/null )
 
 rootBase="/opt"
@@ -50,7 +56,7 @@ function vis_examples {
     typeset examplesInfo="${extraInfo} ${runInfo}"
 
     visLibExamplesOutput ${G_myName} 
-  cat  << _EOF_
+    cat  << _EOF_
 $( examplesSeperatorTopLabel "${G_myName}" )
 $( examplesSeperatorChapter "BISOS Provisioning:: Standalone ICM Sets Up Selfcontained ICMs" )
 $( examplesSeperatorSection "Create bisosProvision base directories" )
@@ -60,14 +66,10 @@ ${G_myName} ${extraInfo} -p rootBase=/opt -i provisionerRepoClone
 ${G_myName} ${extraInfo} -p rootBase=/opt -i provisionerBasesPrep
 ${G_myName} ${extraInfo} -i provisionerRepoClone
 ${G_myName} ${extraInfo} -i provisionerBasesPrep
-$( examplesSeperatorChapter "BISOS Provisioning:: Selfcontained ICMs Invocations" )
-$( examplesSeperatorSection "Create Accounts" )
-${G_myName} ${extraInfo} -i updateAccts
-$( examplesSeperatorSection "Create BisosProv Virtenvs" )
-${G_myName} ${extraInfo} -i pythonSysEnvPrepForVirtenvs
-$( examplesSeperatorSection "Create /bisos Bases" )
-${G_myName} ${extraInfo} -i bisosBaseDirsSetup
 _EOF_
+    if [ -f /opt/bisosProvisioner/gitRepos/provisioners/bin/bisosProvisioners_lib.sh ] ; then
+	vis_provisionersExamples "${extraInfo}"
+    fi
 }
 
 noArgsHook() {
@@ -155,7 +157,7 @@ _EOF_
 
     modulePrep
 
-    # /opt/bisosProvisioner}/gitRepos/provisioners
+    # /opt/bisosProvisioner/gitRepos/provisioners
     local provisionersBase="${provisionerBase}/gitRepos/provisioners"
 
     if [ -d "${provisionersBase}" ] ; then
@@ -189,7 +191,7 @@ _EOF_
 }
 
 
-function vis_updateAccts {
+function vis_updateAcctsNOT {
     G_funcEntry
     function describeF {  G_funcEntryShow; cat  << _EOF_
 _EOF_
@@ -212,7 +214,7 @@ _EOF_
     lpReturn
 }
 
-function vis_pythonSysEnvPrepForVirtenvs {
+function vis_pythonSysEnvPrepForVirtenvsNO {
     G_funcEntry
     function describeF {  G_funcEntryShow; cat  << _EOF_
 _EOF_
@@ -235,7 +237,7 @@ _EOF_
 }
 
 
-function vis_bisosBaseDirsSetup {
+function vis_bisosBaseDirsSetupNOT {
     G_funcEntry
     function describeF {  G_funcEntryShow; cat  << _EOF_
 _EOF_
