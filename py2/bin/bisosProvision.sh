@@ -5,32 +5,13 @@ IcmBriefDescription="BISOS Provisioning -- Create the needed framework for BISOS
 ####+BEGINNOT: bx:dblock:global:file-insert :file "/opt/idaas/gitRepos/idaas/idaas/tools/common/lib/bash/mainRepoRootDetermine.bash"
 #
 # DO NOT EDIT THIS SECTION (dblock)
-# /opt/idaas/gitRepos/idaas/idaas/tools/common/lib/bash/mainRepoRootDetermine.bash common dblock inserted code
-#
 
-gitTopLevelOffset="ci-actions"   # Specified as a dblock parameter
-specifiedIcmPkgRunBase="/opt/idaas/gitRepos/idaas/ci-actions" # Specified as a dblock parameter
+# 
+
 scriptSrcRunBase="$( dirname ${BASH_SOURCE[0]} )"
-icmPkgRunBase=$(readlink -f ${scriptSrcRunBase}/..)  # Assuming Packaged ICM in bin
-icmSeedFile="${icmPkgRunBase}/bin/seedIcmStandalone.bash"
+icmPkgRunBase=$(readlink -f ${scriptSrcRunBase}) 
+icmSeedFile="${icmPkgRunBase}/seedIcmStandalone.bash"
 
-if [ ! -f "${icmSeedFile}" ] ; then
-    #echo "Assuming Detatched ICM Inside Of A Git Repo"
-    mainRepoRoot=$( cd ${scriptSrcRunBase} ;  git rev-parse --show-toplevel 2> /dev/null )
-    if [ ! -z "${mainRepoRoot}" ] ; then
-	icmSeedFile="${mainRepoRoot}/${gitTopLevelOffset}/bin/seedIcmStandalone.bash"
-	if [ -f "${icmSeedFile}" ] ; then 	
-	    icmSeedFile="${icmSeedFile}"  # opDoNothing
-	fi
-    else
-	icmPkgRunBase="${specifiedIcmPkgRunBase}"
-	icmSeedFile="${icmPkgRunBase}/bin/seedIcmStandalone.bash"
-	if [ ! -f "${icmSeedFile}" ] ; then 
-	    echo "E: Missing ${icmSeedFile} -- Misconfigured icmPkgRunBase"
-	    exit 1
-	fi
-    fi
-fi
 if [ "${loadFiles}" == "" ] ; then
     "${icmSeedFile}" -l $0 "$@" 
     exit $?
@@ -155,7 +136,7 @@ _EOF_
     
     lpDo mkdir -p "${gitReposAnonBase}"
     
-    inBaseDirDo "${gitReposAnonBase}" sudo git clone https://github.com/bxGenesis/provisioners.git
+    inBaseDirDo "${gitReposAnonBase}" git clone https://github.com/bxGenesis/provisioners.git
 
     lpDo mkdir -p "${gitReposBase}"
 
