@@ -24,6 +24,7 @@ __version__ = '0.3'
 
 requires = [
     "bisos.bashStandaloneIcmSeed",
+    "bisos.platform",
 ]
 
 

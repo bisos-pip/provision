@@ -31,6 +31,25 @@ rootBase="/opt"
 beSilent="false"
 
 provisionerBase="${rootBase}/bisosProvisioner"
+
+    # local currentUser=$(id -un)
+    # local currentUserGroup=$(id -g -n ${currentUser})
+
+
+    # local bx_platformInfoManage=$( which -a bx-platformInfoManage.py | grep -v venv | head -1 )
+
+    # if [ ! -f "${bx_platformInfoManage}" ] ; then 
+    # 	echoErr "Missing ${bx_platformInfoManage}"
+    # 	return 1
+    # fi
+    
+    # local bisosUserName=$( ${bx_platformInfoManage} -i pkgInfoParsGet | grep bisosUserName | cut -d '=' -f 2 )
+    # local bisosGroupName=$( ${bx_platformInfoManage}  -i pkgInfoParsGet | grep bisosGroupName | cut -d '=' -f 2 )
+    
+    # local rootDir_bisos=$( ${bx_platformInfoManage}  -i pkgInfoParsGet | grep rootDir_bisos | cut -d '=' -f 2 )
+    # local rootDir_bxo=$( ${bx_platformInfoManage}  -i pkgInfoParsGet | grep rootDir_bxo | cut -d '=' -f 2 )
+    # local rootDir_deRun=$( ${bx_platformInfoManage} -i pkgInfoParsGet | grep rootDir_deRun | cut -d '=' -f 2 )        
+
       
 genesisGitRepoCloneCmnd="git clone https://github.com/bxGenesis/provisioners.git"
 
