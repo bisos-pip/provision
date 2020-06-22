@@ -22,7 +22,7 @@ fi
 
 
 function vis_describe {  cat  << _EOF_
-BISOS Provisioer is a minimal standaloneIcm that creates a standaloneIcmEnv
+BISOS Provisioer is a minimal standaloneIcm that creates a selfreliantIcmEnv
 and invokes facilities there.
 _EOF_
 		      }
