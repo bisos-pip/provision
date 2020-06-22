@@ -2,7 +2,7 @@
 
 IcmBriefDescription="BISOS Provisioning -- Create the needed framework for BISOS."
 
-####+BEGINNOT: bx:dblock:global:file-insert :file "/opt/idaas/gitRepos/idaas/idaas/tools/common/lib/bash/mainRepoRootDetermine.bash"
+####+BEGINNOT: bx:dblock:global:file-insert :file "tools/common/lib/bash/mainRepoRootDetermine.bash"
 #
 # DO NOT EDIT THIS SECTION (dblock)
 
@@ -19,39 +19,6 @@ fi
 
 ####+END:
 
-# /opt/bisosProvisioner/gitRepos/provisioners/bin/bisosProvisioners_lib.sh
-if [ -f /opt/bisosProvisioner/gitRepos/provisioners/bin/bisosProvisioners_lib.sh ] ; then
-    . /opt/bisosProvisioner/gitRepos/provisioners/bin/bisosProvisioners_lib.sh
-fi
-
-
-#mainRepoRoot=$( cd $(dirname $0); git rev-parse --show-toplevel 2> /dev/null )
-
-rootBase="/opt"
-beSilent="false"
-
-provisionerBase="${rootBase}/bisosProvisioner"
-
-    # local currentUser=$(id -un)
-    # local currentUserGroup=$(id -g -n ${currentUser})
-
-
-    # local bx_platformInfoManage=$( which -a bx-platformInfoManage.py | grep -v venv | head -1 )
-
-    # if [ ! -f "${bx_platformInfoManage}" ] ; then 
-    # 	echoErr "Missing ${bx_platformInfoManage}"
-    # 	return 1
-    # fi
-    
-    # local bisosUserName=$( ${bx_platformInfoManage} -i pkgInfoParsGet | grep bisosUserName | cut -d '=' -f 2 )
-    # local bisosGroupName=$( ${bx_platformInfoManage}  -i pkgInfoParsGet | grep bisosGroupName | cut -d '=' -f 2 )
-    
-    # local rootDir_bisos=$( ${bx_platformInfoManage}  -i pkgInfoParsGet | grep rootDir_bisos | cut -d '=' -f 2 )
-    # local rootDir_bxo=$( ${bx_platformInfoManage}  -i pkgInfoParsGet | grep rootDir_bxo | cut -d '=' -f 2 )
-    # local rootDir_deRun=$( ${bx_platformInfoManage} -i pkgInfoParsGet | grep rootDir_deRun | cut -d '=' -f 2 )        
-
-      
-genesisGitRepoCloneCmnd="git clone https://github.com/bxGenesis/provisioners.git"
 
 
 function vis_describe {  cat  << _EOF_
@@ -62,10 +29,55 @@ _EOF_
 
 # Import Libraries
 
+beSilent="false"
+baseDirDefault="/opt/bisosProvisioner"
+baseDir=""       # ICM Parameter
+
+provisionersBase=""
 
 function G_postParamHook {
-     return 0
+
+    provisionersBase="$( vis_rootDirProvisionersGet )"    
+    
+    # /opt/bisosProvisioner/gitRepos/provisioners/bin/bisosProvisioners_lib.sh
+    bisosProvisionersLib="${provisionersBase}/gitRepos/provisioners/bin/bisosProvisioners_lib.sh"
+
+    if [ -f "${bisosProvisionersLib}" ] ; then
+	. "${bisosProvisionersLib}"
+    fi
 }
+
+
+function vis_rootDirProvisionersGet {
+    G_funcEntry
+    function describeF {  G_funcEntryShow; cat  << _EOF_
+If bx-platformInfoManage.py exists we use it. But we don't require it.
+_EOF_
+    }
+    EH_assert [[ $# -eq 0 ]]
+
+    local bx_platformInfoManage=$( which -a bx-platformInfoManage.py | grep -v venv | head -1 )
+    local rootDir_provisioners=""
+
+    if [ -z "${baseDir}" ] ; then
+	# Not specified on command-line
+	if [ -f "${bx_platformInfoManage}" ] ; then
+	    rootDir_provisioners=$( ${bx_platformInfoManage} -i pkgInfoParsGet | grep rootDir_provisioners | cut -d '=' -f 2 )
+
+	    if [ -z "${rootDir_provisioners}" ] ; then
+		EH_problem "Missing specified rootDir_provisioners in ${bx_platformInfoManage}"
+	    fi
+	else
+	    rootDir_provisioners=${baseDirDefault}   # 
+	fi
+    else
+	rootDir_provisioners=${baseDir}  # As specified as ICM Parameter on command-line
+    fi
+
+    echo "${rootDir_provisioners}"
+}
+
+
 
 function vis_examples {
     typeset extraInfo="-h -v -n showRun"
@@ -78,15 +90,17 @@ function vis_examples {
     cat  << _EOF_
 $( examplesSeperatorTopLabel "${G_myName}" )
 $( examplesSeperatorChapter "BISOS Provisioning:: Standalone ICM Sets Up Selfcontained ICMs" )
-$( examplesSeperatorSection "Create bisosProvision base directories" )
+$( examplesSeperatorSection "Ensure That Git Is In Place" )
 ${G_myName} ${extraInfo} -i gitBinsPrep
 ${G_myName} ${extraInfo} -i gitPrep
-${G_myName} ${extraInfo} -p rootBase=/opt -i provisionerRepoClone
-${G_myName} ${extraInfo} -p rootBase=/opt -i provisionerBasesPrep
+$( examplesSeperatorSection "Create bisosProvision base directories" )
+${G_myName} ${extraInfo} -p baseDir=/opt/bisosProvisioner -i provisionerRepoClone
+${G_myName} ${extraInfo} -p baseDir=/opt/bisosProvisioner -i provisionerBasesPrep
 ${G_myName} ${extraInfo} -i provisionerRepoClone
-${G_myName} ${extraInfo} -i provisionerBasesPrep
+${G_myName} ${extraInfo} -i provisionersBasesPrep   # Primary Action -- runs gitPrep + provisionerRepoClone
 _EOF_
-    if [ -f /opt/bisosProvisioner/gitRepos/provisioners/bin/bisosProvisioners_lib.sh ] ; then
+    
+    if [ -f "${bisosProvisionersLib}" ] ; then
 	vis_provisionersExamples "${extraInfo}"
     fi
 }
@@ -102,7 +116,7 @@ _EOF_
     }
     EH_assert [[ $# -eq 0 ]]
 
-    provisionerBase="${rootBase}/bisosProvisioner"
+    #provisionersBase="$( vis_rootDirProvisionersGet )"
     
     lpReturn
 }
@@ -145,15 +159,29 @@ _EOF_
 
     opDo modulePrep
 
+    # /opt/bisosProvisioner/gitRepos/provisioners
+    local provisionersGitBase="${provisionersBase}/gitRepos/provisioners"
+
+    echo "${provisionersGitBase}"
+
+    lpReturn
+
+    if [ -d "${provisionersGitBase}" ] ; then
+	if [ "${beSilent}" != "true" ] ; then  
+	    ANT_raw "W: ${provisionersGitBase} is in place, cloning skipped"
+	fi
+	lpReturn
+    fi
+
     local currentUser=$(id -nu)
     local currentGroup=$(id -ng)
     
-    lpDo sudo  mkdir -p "${provisionerBase}"
+    lpDo sudo  mkdir -p "${provisionersBase}"
 
-    lpDo sudo chown ${currentUser}:${currentGroup} "${provisionerBase}"
+    lpDo sudo chown ${currentUser}:${currentGroup} "${provisionersBase}"
 
-    local gitReposAnonBase="${provisionerBase}/gitReposAnon"
-    local gitReposBase="${provisionerBase}/gitRepos"    
+    local gitReposAnonBase="${provisionersBase}/gitReposAnon"
+    local gitReposBase="${provisionersBase}/gitRepos"    
     
     lpDo mkdir -p "${gitReposAnonBase}"
     
@@ -167,7 +195,7 @@ _EOF_
 }
 
 
-function vis_provisionerBasesPrep {
+function vis_provisionersBasesPrep {
     G_funcEntry
     function describeF {  G_funcEntryShow; cat  << _EOF_
 _EOF_
@@ -177,103 +205,21 @@ _EOF_
     modulePrep
 
     # /opt/bisosProvisioner/gitRepos/provisioners
-    local provisionersBase="${provisionerBase}/gitRepos/provisioners"
+    local provisionersGitBase="${provisionersBase}/gitRepos/provisioners"
 
-    if [ -d "${provisionersBase}" ] ; then
+    if [ -d "${provisionersGitBase}" ] ; then
 	if [ "${beSilent}" != "true" ] ; then  
-	    ANT_raw "${provisionersBase} is in place, preparation skipped"
+	    ANT_raw "W: ${provisionersGitBase} is in place, preparation skipped"
 	fi
-    else	
-    
-	opDo vis_gitBinsPrep
-
-	opDo vis_gitPrep
-
-	opDo vis_provisionerRepoClone
+	lpReturn
     fi
     
-    lpReturn
-}
-
-function provisionersPrep {
-    G_funcEntry
-    function describeF {  G_funcEntryShow; cat  << _EOF_
-_EOF_
-    }
-    EH_assert [[ $# -eq 0 ]]
-
-    modulePrep
+    lpDo vis_gitBinsPrep
     
-    beSilent="true"
+    lpDo vis_gitPrep
+    
+    lpDo vis_provisionerRepoClone
     
     lpReturn
 }
 
-
-function vis_updateAcctsNOT {
-    G_funcEntry
-    function describeF {  G_funcEntryShow; cat  << _EOF_
-_EOF_
-    }
-    EH_assert [[ $# -eq 0 ]]
-
-    opDo provisionersPrep
-
-    # /opt/bisosProvisioner}/gitRepos/provisioners/bin/bisosAccounts.sh
-    local bisosAccountsProg="${provisionerBase}/gitRepos/provisioners/bin/bisosAccounts.sh"
-    opDo vis_provisionerBasesPrep    
-
-    if [ ! -x "${bisosAccountsProg}" ] ; then
-	EH_problem "Missing ${bisosAccountsProg}"
-	lpReturn 1
-    else	
-    	opDo "${bisosAccountsProg}" -h -v -n showRun -i fullUpdate passwd_tmpSame
-    fi
-    
-    lpReturn
-}
-
-function vis_pythonSysEnvPrepForVirtenvsNO {
-    G_funcEntry
-    function describeF {  G_funcEntryShow; cat  << _EOF_
-_EOF_
-    }
-    EH_assert [[ $# -eq 0 ]]
-
-    opDo provisionersPrep
-
-    # /opt/bisosProvisioner}/gitRepos/provisioners/bin/bisosBaseDirsSetup.sh
-    local bisosProg="${provisionerBase}/gitRepos/provisioners/bin/bisosBaseDirsSetup.sh"
-
-    if [ ! -x "${bisosProg}" ] ; then
-	EH_problem "Missing ${bisosProg}"
-	lpReturn 1
-    else	
-    	opDo "${bisosProg}" -h -v -n showRun -i pythonSysEnvPrepForVirtenvs
-    fi
-    
-    lpReturn
-}
-
-
-function vis_bisosBaseDirsSetupNOT {
-    G_funcEntry
-    function describeF {  G_funcEntryShow; cat  << _EOF_
-_EOF_
-    }
-    EH_assert [[ $# -eq 0 ]]
-
-    opDo provisionersPrep
-
-    # /opt/bisosProvisioner}/gitRepos/provisioners/bin/bisosBaseDirsSetup.sh
-    local bisosProg="${provisionerBase}/gitRepos/provisioners/bin/bisosBaseDirsSetup.sh"
-
-    if [ ! -x "${bisosProg}" ] ; then
-	EH_problem "Missing ${bisosProg}"
-	lpReturn 1
-    else	
-    	opDo "${bisosProg}" -h -v -n showRun -i bisosBaseDirsSetup
-    fi
-    
-    lpReturn
-}
