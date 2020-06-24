@@ -162,10 +162,6 @@ _EOF_
     # /opt/bisosProvisioner/gitRepos/provisioners
     local provisionersGitBase="${provisionersBase}/gitRepos/provisioners"
 
-    echo "${provisionersGitBase}"
-
-    lpReturn
-
     if [ -d "${provisionersGitBase}" ] ; then
 	if [ "${beSilent}" != "true" ] ; then  
 	    ANT_raw "W: ${provisionersGitBase} is in place, cloning skipped"
