@@ -103,6 +103,11 @@ _EOF_
     if [ -f "${bisosProvisionersLib}" ] ; then
 	vis_provisionersExamples "${extraInfo}"
     fi
+    cat  << _EOF_
+$( examplesSeperatorChapter "Base BISOS Platform:: Create the Base BISOS Platform" )
+
+_EOF_
+    
 }
 
 noArgsHook() {
@@ -217,5 +222,43 @@ _EOF_
     lpDo vis_provisionerRepoClone
     
     lpReturn
+}
+
+
+function vis_baseBisosPlatform {
+    G_funcEntry
+    function describeF {  G_funcEntryShow; cat  << _EOF_
+_EOF_
+    }
+    EH_assert [[ $# -eq 0 ]]
+
+    modulePrep
+
+    lpDo vis_provisionersBasesPrep
+
+    if [ -f "${bisosProvisionersLib}" ] ; then
+	. "${bisosProvisionersLib}"
+    else
+	EH_problem "Missing ${bisosProvisionersLib} -- Aborting"
+	lpReturn
+    fi
+    
+    lpDo vis_pythonSysEnvPrepForVirtenvs
+
+    lpDo vis_updateAccts
+
+    lpDo vis_provisionersVenvPipInstalls
+
+    lpDo vis_bisosBaseDirsSetup   # NOTYET rename to provisionersBisosBaseDirsSetup
+
+    # lpDo vis_provisionersGitReposSetup
+    
+    # NOTYET, we now need to source /bisos/core/bin
+
+    # lpDo vis_platformGitReposSetup    # panels, etc
+
+    # lpDo vis_platformBisosBaseDirsSetup
+
+    # lpDo vis_osmtGenesis    
 }
 
