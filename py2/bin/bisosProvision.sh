@@ -97,7 +97,7 @@ $( examplesSeperatorSection "Create bisosProvision base directories" )
 ${G_myName} ${extraInfo} -p baseDir=/opt/bisosProvisioner -i provisionerRepoClone
 ${G_myName} ${extraInfo} -p baseDir=/opt/bisosProvisioner -i provisionerBasesPrep
 ${G_myName} ${extraInfo} -i provisionerRepoClone
-${G_myName} ${extraInfo} -i provisionersBasesPrep   # Primary Action -- runs gitPrep + provisionerRepoClone
+${G_myName} ${extraInfo} -i provisionersBasesPrep   # Notable Action -- runs gitPrep + provisionerRepoClone
 _EOF_
     
     if [ -f "${bisosProvisionersLib}" ] ; then
@@ -105,7 +105,9 @@ _EOF_
     fi
     cat  << _EOF_
 $( examplesSeperatorChapter "Base BISOS Platform:: Create the Base BISOS Platform" )
-
+${G_myName} ${extraInfo} -i baseBisosPlatform   # Primary Action -- runs from provisionersBin and from platfromBin
+${G_myName} ${extraInfo} -i miniBlee            # Primary Action
+${G_myName} ${extraInfo} -i miniBleeAtBase ${HOME}    # Primary Action
 _EOF_
     
 }
@@ -225,6 +227,71 @@ _EOF_
 }
 
 
+function vis_miniBlee {
+    G_funcEntry
+    function describeF {  G_funcEntryShow; cat  << _EOF_
+Incomplete -- PlaceHolder for Now
+_EOF_
+    }
+    EH_assert [[ $# -eq 0 ]]
+
+    modulePrep
+
+    lpDo vis_provisionersBasesPrep
+
+    if [ -f "${bisosProvisionersLib}" ] ; then
+	. "${bisosProvisionersLib}"
+    else
+	EH_problem "Missing ${bisosProvisionersLib} -- Aborting"
+	lpReturn
+    fi
+    
+    lpDo vis_pythonSysEnvPrepForVirtenvs
+
+    lpDo vis_updateAccts
+
+    lpDo vis_provisionersVenvPipInstalls
+
+    lpDo vis_bisosBaseDirsSetup   # NOTYET rename to provisionersBisosBaseDirsSetup
+
+    lpDo vis_provisionersGitReposBasesAnon
+}
+
+
+function vis_miniBleeAtBase {
+    G_funcEntry
+    function describeF {  G_funcEntryShow; cat  << _EOF_
+Incomplete -- PlaceHolder for Now
+_EOF_
+    }
+    EH_assert [[ $# -eq 1 ]]
+
+    local miniBleeBase=$1
+    
+    modulePrep
+
+    lpDo vis_provisionersBasesPrep
+
+    if [ -f "${bisosProvisionersLib}" ] ; then
+	. "${bisosProvisionersLib}"
+    else
+	EH_problem "Missing ${bisosProvisionersLib} -- Aborting"
+	lpReturn
+    fi
+    
+    lpDo vis_pythonSysEnvPrepForVirtenvs
+
+    lpDo vis_updateAccts
+
+    lpDo vis_provisionersVenvPipInstalls
+
+    lpDo vis_bisosBaseDirsSetup   # NOTYET rename to provisionersBisosBaseDirsSetup
+
+    lpDo vis_provisionersGitReposBasesAnon
+}
+
+
+
 function vis_baseBisosPlatform {
     G_funcEntry
     function describeF {  G_funcEntryShow; cat  << _EOF_
@@ -251,7 +318,7 @@ _EOF_
 
     lpDo vis_bisosBaseDirsSetup   # NOTYET rename to provisionersBisosBaseDirsSetup
 
-    # lpDo vis_provisionersGitReposSetup
+    lpDo vis_provisionersGitReposAnonSetup
     
     # NOTYET, we now need to source /bisos/core/bin
 
@@ -259,6 +326,6 @@ _EOF_
 
     # lpDo vis_platformBisosBaseDirsSetup
 
-    # lpDo vis_osmtGenesis    
+    # lpDo vis_osmtGenesis
 }
 
