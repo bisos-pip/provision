@@ -22,7 +22,7 @@ fi
 
 
 function vis_describe {  cat  << _EOF_
-BISOS Provisioer is a minimal standaloneIcm that creates a selfreliantIcmEnv
+BISOS Provisioer is a minimal standaloneIcm that creates a self-reliantIcmEnv
 and invokes facilities there.
 _EOF_
 		      }
@@ -33,25 +33,15 @@ beSilent="false"
 baseDirDefault="/opt/bisosProvisioner"
 baseDir=""       # ICM Parameter
 
-provisionersBase=""
-
-function G_postParamHook {
-
-    provisionersBase="$( vis_rootDirProvisionersGet )"    
-    
-    # /opt/bisosProvisioner/gitRepos/provisioners/bin/bisosProvisioners_lib.sh
-    bisosProvisionersLib="${provisionersBase}/gitRepos/provisioners/bin/bisosProvisioners_lib.sh"
-
-    if [ -f "${bisosProvisionersLib}" ] ; then
-	. "${bisosProvisionersLib}"
-    fi
-}
-
 
 function vis_rootDirProvisionersGet {
     G_funcEntry
     function describeF {  G_funcEntryShow; cat  << _EOF_
-If bx-platformInfoManage.py exists we use it. But we don't require it.
+Returns one of:
+	- baseDir if specified as ICM Parameter on command-line
+	- rootDir_provisioners of bx-platformInfoManage.py if it exists
+	- default value of baseDirDefault="/opt/bisosProvisioner"
+in that order.
 _EOF_
     }
     EH_assert [[ $# -eq 0 ]]
@@ -59,7 +49,8 @@ _EOF_
     local bx_platformInfoManage=$( which -a bx-platformInfoManage.py | grep -v venv | head -1 )
     local rootDir_provisioners=""
 
-    if [ -z "${baseDir}" ] ; then
+
+    if [ -z "${baseDir}" ] ; then    # baseDir as specified as ICM Parameter on command-line
 	# Not specified on command-line
 	if [ -f "${bx_platformInfoManage}" ] ; then
 	    rootDir_provisioners=$( ${bx_platformInfoManage} -i pkgInfoParsGet | grep rootDir_provisioners | cut -d '=' -f 2 )
@@ -77,7 +68,22 @@ _EOF_
     echo "${rootDir_provisioners}"
 }
 
+provisionersBase=""
 
+function G_postParamHook {
+
+    provisionersBase="$( vis_rootDirProvisionersGet )"    
+    
+    # /opt/bisosProvisioner/gitRepos/provisioners/bin/bisosProvisioners_lib.sh
+    bisosProvisionersLib="${provisionersBase}/gitRepos/provisioners/bin/bisosProvisioners_lib.sh"
+
+    if [ -f "${bisosProvisionersLib}" ] ; then
+	source "${bisosProvisionersLib}"
+	#
+	# ${bisosProvisionersLib} in turn and in due course
+	# sources /bisos/core/bsip/bin/bsipProvision_lib.sh
+    fi
+}
 
 function vis_examples {
     typeset extraInfo="-h -v -n showRun"
@@ -103,6 +109,7 @@ _EOF_
     if [ -f "${bisosProvisionersLib}" ] ; then
 	vis_provisionersExamples "${extraInfo}"
     fi
+    
     cat  << _EOF_
 $( examplesSeperatorChapter "Base BISOS Platform:: Create the Base BISOS Platform" )
 ${G_myName} ${extraInfo} -i baseBisosPlatform   # Primary Action -- runs from provisionersBin and from platfromBin
@@ -227,69 +234,6 @@ _EOF_
 }
 
 
-function vis_miniBlee {
-    G_funcEntry
-    function describeF {  G_funcEntryShow; cat  << _EOF_
-Incomplete -- PlaceHolder for Now
-_EOF_
-    }
-    EH_assert [[ $# -eq 0 ]]
-
-    modulePrep
-
-    lpDo vis_provisionersBasesPrep
-
-    if [ -f "${bisosProvisionersLib}" ] ; then
-	. "${bisosProvisionersLib}"
-    else
-	EH_problem "Missing ${bisosProvisionersLib} -- Aborting"
-	lpReturn
-    fi
-    
-    lpDo vis_pythonSysEnvPrepForVirtenvs
-
-    lpDo vis_updateAccts
-
-    lpDo vis_provisionersVenvPipInstalls
-
-    lpDo vis_bisosBaseDirsSetup   # NOTYET rename to provisionersBisosBaseDirsSetup
-
-    lpDo vis_provisionersGitReposBasesAnon
-}
-
-
-function vis_miniBleeAtBase {
-    G_funcEntry
-    function describeF {  G_funcEntryShow; cat  << _EOF_
-Incomplete -- PlaceHolder for Now
-_EOF_
-    }
-    EH_assert [[ $# -eq 1 ]]
-
-    local miniBleeBase=$1
-    
-    modulePrep
-
-    lpDo vis_provisionersBasesPrep
-
-    if [ -f "${bisosProvisionersLib}" ] ; then
-	. "${bisosProvisionersLib}"
-    else
-	EH_problem "Missing ${bisosProvisionersLib} -- Aborting"
-	lpReturn
-    fi
-    
-    lpDo vis_pythonSysEnvPrepForVirtenvs
-
-    lpDo vis_updateAccts
-
-    lpDo vis_provisionersVenvPipInstalls
-
-    lpDo vis_bisosBaseDirsSetup   # NOTYET rename to provisionersBisosBaseDirsSetup
-
-    lpDo vis_provisionersGitReposBasesAnon
-}
-
 
 
 function vis_baseBisosPlatform {
@@ -304,28 +248,40 @@ _EOF_
     lpDo vis_provisionersBasesPrep
 
     if [ -f "${bisosProvisionersLib}" ] ; then
-	. "${bisosProvisionersLib}"
+	source "${bisosProvisionersLib}"
     else
 	EH_problem "Missing ${bisosProvisionersLib} -- Aborting"
 	lpReturn
     fi
     
-    lpDo vis_pythonSysEnvPrepForVirtenvs
+    lpDo vis_provisioners_baseBisosPlatform
+    #
+    # vis_provisioners_baseBisosPlatform in turn and in due course
+    # runs vis_bsipProvision_baseBisosPlatform
+    # from /bisos/core/bsip/bin/bsipProvision_lib.sh
 
-    lpDo vis_updateAccts
+}
 
-    lpDo vis_provisionersVenvPipInstalls
 
-    lpDo vis_bisosBaseDirsSetup   # NOTYET rename to provisionersBisosBaseDirsSetup
 
-    lpDo vis_provisionersGitReposAnonSetup
-    
-    # NOTYET, we now need to source /bisos/core/bin
+function vis_miniBlee {
+    G_funcEntry
+    function describeF {  G_funcEntryShow; cat  << _EOF_
+Incomplete -- PlaceHolder for Now
+_EOF_
+    }
+    EH_assert [[ $# -eq 0 ]]
+}
 
-    # lpDo vis_platformGitReposSetup    # panels, etc
 
-    # lpDo vis_platformBisosBaseDirsSetup
+function vis_miniBleeAtBase {
+    G_funcEntry
+    function describeF {  G_funcEntryShow; cat  << _EOF_
+Incomplete -- PlaceHolder for Now
+_EOF_
+    }
+    EH_assert [[ $# -eq 1 ]]
 
-    # lpDo vis_osmtGenesis
+    local miniBleeBase=$1
 }
 
