@@ -112,9 +112,8 @@ _EOF_
     
     cat  << _EOF_
 $( examplesSeperatorChapter "Base BISOS Platform:: Create the Base BISOS Platform" )
-${G_myName} ${extraInfo} -i baseBisosPlatform   # Primary Action -- runs from provisionersBin and from platfromBin
-${G_myName} ${extraInfo} -i miniBlee            # Primary Action
-${G_myName} ${extraInfo} -i miniBleeAtBase ${HOME}    # Primary Action
+$( examplesSeperatorSection "Primary Action -- runs from provisionersBin and from bsip/bin" )
+${G_myName} ${extraInfo} -i sysBasePlatform   # Minimal Host or Guest plus Blee
 _EOF_
     
 }
@@ -234,9 +233,7 @@ _EOF_
 }
 
 
-
-
-function vis_baseBisosPlatform {
+function vis_sysBasePlatform {
     G_funcEntry
     function describeF {  G_funcEntryShow; cat  << _EOF_
 _EOF_
@@ -254,34 +251,10 @@ _EOF_
 	lpReturn
     fi
     
-    lpDo vis_provisioners_baseBisosPlatform
+    lpDo vis_bsipProvision_sysBasePlatform
     #
     # vis_provisioners_baseBisosPlatform in turn and in due course
     # runs vis_bsipProvision_baseBisosPlatform
     # from /bisos/core/bsip/bin/bsipProvision_lib.sh
-
-}
-
-
-
-function vis_miniBlee {
-    G_funcEntry
-    function describeF {  G_funcEntryShow; cat  << _EOF_
-Incomplete -- PlaceHolder for Now
-_EOF_
-    }
-    EH_assert [[ $# -eq 0 ]]
-}
-
-
-function vis_miniBleeAtBase {
-    G_funcEntry
-    function describeF {  G_funcEntryShow; cat  << _EOF_
-Incomplete -- PlaceHolder for Now
-_EOF_
-    }
-    EH_assert [[ $# -eq 1 ]]
-
-    local miniBleeBase=$1
 }
 
