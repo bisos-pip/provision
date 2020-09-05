@@ -251,7 +251,7 @@ _EOF_
 	lpReturn
     fi
     
-    lpDo vis_bsipProvision_sysBasePlatform
+    lpDo vis_provisioners_sysBasePlatform
     #
     # vis_provisioners_baseBisosPlatform in turn and in due course
     # runs vis_bsipProvision_baseBisosPlatform
