@@ -111,6 +111,8 @@ _EOF_
     fi
     
     cat  << _EOF_
+$( examplesSeperatorChapter "Un Do" )
+${G_myName} ${extraInfo} -i deBisosIfy
 $( examplesSeperatorChapter "Base BISOS Platform:: Create the Base BISOS Platform" )
 $( examplesSeperatorSection "Primary Action -- runs from provisionersBin and from bsip/bin" )
 ${G_myName} ${extraInfo} -i sysBasePlatform   # Minimal Host or Guest plus Blee
@@ -256,5 +258,34 @@ _EOF_
     # vis_provisioners_baseBisosPlatform in turn and in due course
     # runs vis_bsipProvision_baseBisosPlatform
     # from /bisos/core/bsip/bin/bsipProvision_lib.sh
+}
+
+
+
+function vis_deBisosIfy {
+    G_funcEntry
+    function describeF {  G_funcEntryShow; cat  << _EOF_
+Primarily used for convenient regression tessting.
+_EOF_
+    }
+    EH_assert [[ $# -eq 0 ]]
+
+    lpDo echo "This Will DELETE ALL OF BISOS -- Are You Sure You Want To Proceed? Ctl-C To Abort:"
+    read
+
+    lpDo sudo rm -r -f /de
+    lpDo sudo rm -r -f /bxo
+    lpDo sudo rm -r -f /bisos
+
+    lpDo sudo rm -r -f /opt/bisosProvisioner
+
+    lpDo sudo pip2 uninstall --yes unisos.ucf unisos.icm bisos.platform bisos.common
+
+    lpDo sudo pip3 uninstall --yes bisos.bashStandaloneIcmSeed bisos.provision
+
+    # NOTYET -- undo bisos accounts and groups
+
+    # NOTYET -- Un-install all deb pkgs -- restore back to where we were in the begining.
+
 }
 
