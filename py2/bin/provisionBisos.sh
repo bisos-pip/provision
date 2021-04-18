@@ -112,7 +112,9 @@ _EOF_
     
     cat  << _EOF_
 $( examplesSeperatorChapter "Un Do" )
-${G_myName} ${extraInfo} -i deBisosIfy
+${G_myName} ${extraInfo} -i deBisosIfy       # For regression testing and updating
+${G_myName} ${extraInfo} -i deBxoIfy         # Explicitly remove /bxo -- ALERT
+${G_myName} ${extraInfo} -i fullDeBisosIfy   # Complete Re-Install -- Data Loss ALERT
 $( examplesSeperatorChapter "Base BISOS Platform:: Create the Base BISOS Platform" )
 $( examplesSeperatorSection "Primary Action -- runs from provisionersBin and from bsip/bin" )
 ${G_myName} ${extraInfo} -i sysBasePlatform   # Minimal Host or Guest plus Blee
@@ -261,11 +263,10 @@ _EOF_
 }
 
 
-
-function vis_deBisosIfy {
+function vis_fullDeBisosIfy {
     G_funcEntry
     function describeF {  G_funcEntryShow; cat  << _EOF_
-Primarily used for convenient regression tessting.
+Primarily used for convenient regression testing.
 _EOF_
     }
     EH_assert [[ $# -eq 0 ]]
@@ -273,8 +274,25 @@ _EOF_
     lpDo echo "This Will DELETE ALL OF BISOS -- Are You Sure You Want To Proceed? Ctl-C To Abort:"
     read
 
+    lpDo vis_deBxoIfy
+    lpDo vis_deBisosIfy
+}
+
+function vis_deBisosIfy {
+    G_funcEntry
+    function describeF {  G_funcEntryShow; cat  << _EOF_
+Primarily used for convenient regression testing.
+_EOF_
+    }
+    EH_assert [[ $# -eq 0 ]]
+
+    lpDo echo "This Will DELETE ALL OF /bisos /de -- Are You Sure You Want To Proceed? Ctl-C To Abort:"
+    read
+
     lpDo sudo rm -r -f /de
-    lpDo sudo rm -r -f /bxo
+    
+    #lpDo sudo rm -r -f /bxo
+    
     lpDo sudo rm -r -f /bisos
 
     lpDo sudo rm -r -f /opt/bisosProvisioner
@@ -287,5 +305,20 @@ _EOF_
 
     # NOTYET -- Un-install all deb pkgs -- restore back to where we were in the begining.
 
+}
+
+
+function vis_deBxoIfy {
+    G_funcEntry
+    function describeF {  G_funcEntryShow; cat  << _EOF_
+Primarily used for convenient regression testing.
+_EOF_
+    }
+    EH_assert [[ $# -eq 0 ]]
+
+    lpDo echo "This Will DELETE ALL OF /bxo -- Are You Sure You Want To Proceed? Ctl-C To Abort:"
+    read
+
+    lpDo sudo rm -r -f /bxo
 }
 
