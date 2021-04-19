@@ -96,6 +96,7 @@ function vis_examples {
     cat  << _EOF_
 $( examplesSeperatorTopLabel "${G_myName}" )
 $( examplesSeperatorChapter "BISOS Provisioning:: Standalone ICM Sets Up Selfcontained ICMs" )
+${G_myName} ${extraInfo} -i adjustSourcesList
 $( examplesSeperatorSection "Ensure That Git Is In Place" )
 ${G_myName} ${extraInfo} -i gitBinsPrep
 ${G_myName} ${extraInfo} -i gitPrep
@@ -134,6 +135,31 @@ _EOF_
     EH_assert [[ $# -eq 0 ]]
 
     #provisionersBase="$( vis_rootDirProvisionersGet )"
+    
+    lpReturn
+}
+
+
+function vis_adjustSourcesList {
+    G_funcEntry
+    function describeF {  G_funcEntryShow; cat  << _EOF_
+_EOF_
+    }
+    EH_assert [[ $# -eq 0 ]]
+
+    local sourcesListOrig=/etc/apt/sources.list.orig
+    local sourcesListTmp=/tmp/sources.list.$$
+    
+    if [ -f "${sourcesListOrig}" ] ; then 
+	opDo cp -p /etc/apt/sources.list /etc/apt/sources.list.$$
+    else
+	opDo cp -p /etc/apt/sources.list /etc/apt/sources.list.orig
+    fi
+
+    opDo egrep -v '^deb cdrom:' /etc/apt/sources.list \> ${sourcesListTmp}
+    opDo mv ${sourcesListTmp} /etc/apt/sources.list
+    
+    apt-get update
     
     lpReturn
 }
@@ -226,6 +252,8 @@ _EOF_
 	fi
 	lpReturn
     fi
+
+    lpDo vis_adjustSourcesList
     
     lpDo vis_gitBinsPrep
     
