@@ -151,15 +151,17 @@ _EOF_
     local sourcesListTmp=/tmp/sources.list.$$
     
     if [ -f "${sourcesListOrig}" ] ; then 
-	opDo cp -p /etc/apt/sources.list /etc/apt/sources.list.$$
+	lpDo sudo cp -p /etc/apt/sources.list /etc/apt/sources.list.$$
     else
-	opDo cp -p /etc/apt/sources.list /etc/apt/sources.list.orig
+	lpDo sudo cp -p /etc/apt/sources.list /etc/apt/sources.list.orig
     fi
 
-    opDo egrep -v '^deb cdrom:' /etc/apt/sources.list \> ${sourcesListTmp}
-    opDo mv ${sourcesListTmp} /etc/apt/sources.list
+    lpDo eval egrep -v '"^deb cdrom:"' /etc/apt/sources.list \> ${sourcesListTmp}
+    lpDo sudo mv ${sourcesListTmp} /etc/apt/sources.list
+    lpDo sudo chown root:root /etc/apt/sources.list
+    lpDo sudo chmod go-w /etc/apt/sources.list    
     
-    apt-get update
+    lpDo sudo apt-get update
     
     lpReturn
 }
