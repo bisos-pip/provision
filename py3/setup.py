@@ -19,12 +19,12 @@ def longDescription():
 
 
 # __version__ = get_version('unisos/icm/__init__.py')
-__version__ = '0.17'
+__version__ = '0.18'
 
 
 requires = [
-    "bisos2.bashStandaloneIcmSeed",
-    # "bisos2.platform",
+    "bisos.bashStandaloneIcmSeed",
+    # "bisos.platform",
 ]
 
 
@@ -37,9 +37,9 @@ scripts = [
 
 
 setuptools.setup(
-    name='bisos2.provision',
+    name='bisos.provision',
     version=__version__,
-    namespace_packages=['bisos2'],
+    namespace_packages=['bisos'],
     packages=setuptools.find_packages(),
     scripts=scripts,
     # data_files=[
