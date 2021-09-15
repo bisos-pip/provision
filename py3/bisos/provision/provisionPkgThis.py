@@ -129,7 +129,7 @@ class pkgThis_libOverview(icm.Cmnd):
 *       [[elisp:(org-show-subtree)][|=]]  [[elisp:(org-cycle)][| *Description:* | ]]
 **  [[elisp:(org-cycle)][| ]]  [Xref]          :: *[Related/Xrefs:]*  <<Xref-Here->>  -- External Documents  [[elisp:(org-cycle)][| ]]
 
-**  [[elisp:(org-cycle)][| ]]   Model and Terminology                                      :Overview:
+**  [[elisp:(org-cycle)][| ]]	Model and Terminology 					   :Overview:
 This module is part of BISOS and its primary documentation is in  http://www.by-star.net/PLPC/180047
 **      [End-Of-Description]
 """
