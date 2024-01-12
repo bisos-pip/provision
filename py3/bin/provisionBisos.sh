@@ -25,7 +25,7 @@ function vis_describe {  cat  << _EOF_
 BISOS Provisioer is a minimal standaloneIcm that creates a self-reliantIcmEnv
 and invokes facilities there.
 _EOF_
-		      }
+                      }
 
 # Import Libraries
 
@@ -38,9 +38,9 @@ function vis_rootDirProvisionersGet {
     G_funcEntry
     function describeF {  G_funcEntryShow; cat  << _EOF_
 Returns one of:
-	- baseDir if specified as ICM Parameter on command-line
-	- rootDir_provisioners of bx-platformInfoManage.py if it exists
-	- default value of baseDirDefault="/opt/bisosProvisioner"
+        - baseDir if specified as ICM Parameter on command-line
+        - rootDir_provisioners of bx-platformInfoManage.py if it exists
+        - default value of baseDirDefault="/opt/bisosProvisioner"
 in that order.
 _EOF_
     }
@@ -51,18 +51,18 @@ _EOF_
 
 
     if [ -z "${baseDir}" ] ; then    # baseDir as specified as ICM Parameter on command-line
-	# Not specified on command-line
-	if [ -f "${bx_platformInfoManage}" ] ; then
-	    rootDir_provisioners=$( ${bx_platformInfoManage} -i pkgInfoParsGet | grep rootDir_provisioners | cut -d '=' -f 2 )
+        # Not specified on command-line
+        if [ -f "${bx_platformInfoManage}" ] ; then
+            rootDir_provisioners=$( ${bx_platformInfoManage} -i pkgInfoParsGet | grep rootDir_provisioners | cut -d '=' -f 2 )
 
-	    if [ -z "${rootDir_provisioners}" ] ; then
-		EH_problem "Missing specified rootDir_provisioners in ${bx_platformInfoManage}"
-	    fi
-	else
-	    rootDir_provisioners=${baseDirDefault}   # 
-	fi
+            if [ -z "${rootDir_provisioners}" ] ; then
+                EH_problem "Missing specified rootDir_provisioners in ${bx_platformInfoManage}"
+            fi
+        else
+            rootDir_provisioners=${baseDirDefault}   # 
+        fi
     else
-	rootDir_provisioners=${baseDir}  # As specified as ICM Parameter on command-line
+        rootDir_provisioners=${baseDir}  # As specified as ICM Parameter on command-line
     fi
 
     echo "${rootDir_provisioners}"
@@ -78,10 +78,10 @@ function G_postParamHook {
     bisosProvisionersLib="${provisionersBase}/gitRepos/provisioners/bin/bisosProvisioners_lib.sh"
 
     if [ -f "${bisosProvisionersLib}" ] ; then
-	source "${bisosProvisionersLib}"
-	#
-	# ${bisosProvisionersLib} in turn and in due course
-	# sources /bisos/core/bsip/bin/bsipProvision_lib.sh
+        source "${bisosProvisionersLib}"
+        #
+        # ${bisosProvisionersLib} in turn and in due course
+        # sources /bisos/core/bsip/bin/bsipProvision_lib.sh
     fi
 }
 
@@ -108,7 +108,7 @@ ${G_myName} ${extraInfo} -i provisionersBasesPrep   # Notable Action -- runs git
 _EOF_
     
     if [ -f "${bisosProvisionersLib}" ] ; then
-	vis_provisionersExamples "${extraInfo}"
+        vis_provisionersExamples "${extraInfo}"
     fi
     
     cat  << _EOF_
@@ -151,9 +151,9 @@ _EOF_
     local sourcesListTmp=/tmp/sources.list.$$
     
     if [ -f "${sourcesListOrig}" ] ; then 
-	lpDo sudo cp -p /etc/apt/sources.list /etc/apt/sources.list.$$
+        lpDo sudo cp -p /etc/apt/sources.list /etc/apt/sources.list.$$
     else
-	lpDo sudo cp -p /etc/apt/sources.list /etc/apt/sources.list.orig
+        lpDo sudo cp -p /etc/apt/sources.list /etc/apt/sources.list.orig
     fi
 
     lpDo eval egrep -v '"^deb cdrom:"' /etc/apt/sources.list \> ${sourcesListTmp}
@@ -208,10 +208,10 @@ _EOF_
     local provisionersGitBase="${provisionersBase}/gitRepos/provisioners"
 
     if [ -d "${provisionersGitBase}" ] ; then
-	if [ "${beSilent}" != "true" ] ; then  
-	    ANT_raw "W: ${provisionersGitBase} is in place, cloning skipped"
-	fi
-	lpReturn
+        if [ "${beSilent}" != "true" ] ; then  
+            ANT_raw "W: ${provisionersGitBase} is in place, cloning skipped"
+        fi
+        lpReturn
     fi
 
     local currentUser=$(id -nu)
@@ -249,10 +249,10 @@ _EOF_
     local provisionersGitBase="${provisionersBase}/gitRepos/provisioners"
 
     if [ -d "${provisionersGitBase}" ] ; then
-	if [ "${beSilent}" != "true" ] ; then  
-	    ANT_raw "W: ${provisionersGitBase} is in place, preparation skipped"
-	fi
-	lpReturn
+        if [ "${beSilent}" != "true" ] ; then  
+            ANT_raw "W: ${provisionersGitBase} is in place, preparation skipped"
+        fi
+        lpReturn
     fi
 
     lpDo vis_adjustSourcesList
@@ -279,10 +279,10 @@ _EOF_
     lpDo vis_provisionersBasesPrep
 
     if [ -f "${bisosProvisionersLib}" ] ; then
-	source "${bisosProvisionersLib}"
+        source "${bisosProvisionersLib}"
     else
-	EH_problem "Missing ${bisosProvisionersLib} -- Aborting"
-	lpReturn
+        EH_problem "Missing ${bisosProvisionersLib} -- Aborting"
+        lpReturn
     fi
     
     lpDo vis_provisioners_sysBasePlatform
