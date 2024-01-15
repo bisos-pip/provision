@@ -319,22 +319,32 @@ _EOF_
     lpDo echo "This Will DELETE ALL OF /bisos /de -- Are You Sure You Want To Proceed? Ctl-C To Abort:"
     read
 
+    if [ "$(id -nu)" == "bystar" ]; then
+        echo "This script must be run as intra" 1>&2
+        lpReturn
+    fi
+
+    userExists(){ id "$1" &>/dev/null; } # silent, it just sets the exit code
+
+    if userExists bystar ; then
+        lpDo sudo killall -u bystar
+        lpDo sudo deluser bystar
+        lpDo sudo deluser bxisoDelimiter
+    else
+         echo "bystar account does not exists. Accounts deleted."
+    fi
+
     lpDo sudo rm -r -f /de
-    
-    #lpDo sudo rm -r -f /bxo
-    
+
     lpDo sudo rm -r -f /bisos
 
     lpDo sudo rm -r -f /opt/bisosProvisioner
 
-    lpDo sudo pip2 uninstall --yes unisos.ucf unisos.icm bisos.platform bisos.common
-
-    lpDo sudo pip3 uninstall --yes bisos.bashStandaloneIcmSeed bisos.provision
-
-    # NOTYET -- undo bisos accounts and groups
+    # if sysOS_isDeb11 ; then
+        lpDo sudo pip3 uninstall --yes bisos.bashStandaloneIcmSeed bisos.provision
+    # fi
 
     # NOTYET -- Un-install all deb pkgs -- restore back to where we were in the begining.
-
 }
 
 
