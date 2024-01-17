@@ -88,23 +88,20 @@ function G_postParamHook {
 function vis_examples {
     typeset extraInfo="-h -v -n showRun"
     #typeset extraInfo=""
-    typeset runInfo="-p ri=lsipusr:passive"
 
-    typeset examplesInfo="${extraInfo} ${runInfo}"
-
-    visLibExamplesOutput ${G_myName} 
+    visLibExamplesOutput ${G_myFullName}
     cat  << _EOF_
-$( examplesSeperatorTopLabel "${G_myName}" )
+$( examplesSeperatorTopLabel "${G_myFullName}" )
 $( examplesSeperatorChapter "BISOS Provisioning:: Standalone ICM Sets Up Selfcontained ICMs" )
-${G_myName} ${extraInfo} -i adjustSourcesList
+${G_myFullName} ${extraInfo} -i adjustSourcesList
 $( examplesSeperatorSection "Ensure That Git Is In Place" )
-${G_myName} ${extraInfo} -i gitBinsPrep
-${G_myName} ${extraInfo} -i gitPrep
+${G_myFullName} ${extraInfo} -i gitBinsPrep
+${G_myFullName} ${extraInfo} -i gitPrep
 $( examplesSeperatorSection "Create bisosProvision base directories" )
-${G_myName} ${extraInfo} -p baseDir=/opt/bisosProvisioner -i provisionerRepoClone
-${G_myName} ${extraInfo} -p baseDir=/opt/bisosProvisioner -i provisionerBasesPrep
-${G_myName} ${extraInfo} -i provisionerRepoClone
-${G_myName} ${extraInfo} -i provisionersBasesPrep   # Notable Action -- runs gitPrep + provisionerRepoClone
+${G_myFullName} ${extraInfo} -p baseDir=/opt/bisosProvisioner -i provisionerRepoClone
+${G_myFullName} ${extraInfo} -p baseDir=/opt/bisosProvisioner -i provisionerBasesPrep
+${G_myFullName} ${extraInfo} -i provisionerRepoClone
+${G_myFullName} ${extraInfo} -i provisionersBasesPrep   # Notable Action -- runs gitPrep + provisionerRepoClone
 _EOF_
     
     if [ -f "${bisosProvisionersLib}" ] ; then
@@ -112,13 +109,12 @@ _EOF_
     fi
     
     cat  << _EOF_
-$( examplesSeperatorChapter "Un Do" )
-${G_myName} ${extraInfo} -i deBisosIfy       # For regression testing and updating
-${G_myName} ${extraInfo} -i deBxoIfy         # Explicitly remove /bxo -- ALERT
-${G_myName} ${extraInfo} -i fullDeBisosIfy   # Complete Re-Install -- Data Loss ALERT
+$( examplesSeperatorChapter "Un Do and Re Do" )
+${G_myFullName} ${extraInfo} -i deBisosIfy       # PRIMARY: For regression testing and updating
+${G_myFullName} ${extraInfo} -i reInstall  sysBasePlatform      # PRIMARY: For regression testing and updating
 $( examplesSeperatorChapter "Base BISOS Platform:: Create the Base BISOS Platform" )
 $( examplesSeperatorSection "Primary Action -- runs from provisionersBin and from bsip/bin" )
-${G_myName} ${extraInfo} -i sysBasePlatform   # Minimal Host or Guest plus Blee
+${G_myFullName} ${extraInfo} -i sysBasePlatform   # PRIMARY: Minimal Host or Guest plus Blee
 _EOF_
     
 }
@@ -293,21 +289,6 @@ _EOF_
 }
 
 
-function vis_fullDeBisosIfy {
-    G_funcEntry
-    function describeF {  G_funcEntryShow; cat  << _EOF_
-Primarily used for convenient regression testing.
-_EOF_
-    }
-    EH_assert [[ $# -eq 0 ]]
-
-    lpDo echo "This Will DELETE ALL OF BISOS -- Are You Sure You Want To Proceed? Ctl-C To Abort:"
-    read
-
-    lpDo vis_deBxoIfy
-    lpDo vis_deBisosIfy
-}
-
 function vis_deBisosIfy {
     G_funcEntry
     function describeF {  G_funcEntryShow; cat  << _EOF_
@@ -329,36 +310,60 @@ _EOF_
     if userExists bystar ; then
         lpDo sudo killall -u bystar
         lpDo sudo deluser bystar
+    else
+         echo "bystar account does not exists. Deletion skipped."
+    fi
+
+    if userExists bxisoDelimiter ; then
         lpDo sudo deluser bxisoDelimiter
     else
-         echo "bystar account does not exists. Accounts deleted."
+         echo "bxisoDelimiter account does not exists. Deletion skipped."
     fi
+
+    if userExists bisos ; then
+        lpDo sudo killall -u bisos
+        lpDo sudo deluser bisos
+    else
+        echo "bisos account does not exists. Deletion skipped."
+    fi
+
 
     lpDo sudo rm -r -f /de
 
     lpDo sudo rm -r -f /bisos
 
     lpDo sudo rm -r -f /opt/bisosProvisioner
+    lpDo sudo rm -r -f /var/bisos
 
-    # if sysOS_isDeb11 ; then
+    lpDo sudo rm -r -f /bxo
+
+    if sysOS_isDeb11 ; then
         lpDo sudo pip3 uninstall --yes bisos.bashStandaloneIcmSeed bisos.provision
-    # fi
+    elif sysOS_isDeb12 ; then
+        pipx uninstall bisos.provision
+        pipx uninstall bisos-bashstandaloneicmseed
+        pipx uninstall bisos-platform
+    fi
 
     # NOTYET -- Un-install all deb pkgs -- restore back to where we were in the begining.
 }
 
 
-function vis_deBxoIfy {
+function vis_reInstall {
     G_funcEntry
     function describeF {  G_funcEntryShow; cat  << _EOF_
-Primarily used for convenient regression testing.
+vis_deBisosIfy + install bisos.provision + \$1 action
 _EOF_
     }
-    EH_assert [[ $# -eq 0 ]]
+    EH_assert [[ $# -eq 1 ]]
 
-    lpDo echo "This Will DELETE ALL OF /bxo -- Are You Sure You Want To Proceed? Ctl-C To Abort:"
-    read
+    lDo vis_deBisosIfy
 
-    lpDo sudo rm -r -f /bxo
+    if sysOS_isDeb11 ; then
+        lpDo sudo pip3 install --yes bisos.bashStandaloneIcmSeed bisos.provision
+    elif sysOS_isDeb12 ; then
+        lpDo pipx install bisos.provision
+    fi
+
+    lpDo vis_$1
 }
-
