@@ -109,7 +109,7 @@ _EOF_
     fi
     
     cat  << _EOF_
-$( examplesSeperatorChapter "Un Do and Re Do" )
+$( examplesSeperatorChapter "Un Do and Re Do  -- Data Loss ALERT" )
 ${G_myFullName} ${extraInfo} -i deBisosIfy       # PRIMARY: For regression testing and updating
 ${G_myFullName} ${extraInfo} -i reInstall  sysBasePlatform      # PRIMARY: For regression testing and updating
 $( examplesSeperatorChapter "Base BISOS Platform:: Create the Base BISOS Platform" )
