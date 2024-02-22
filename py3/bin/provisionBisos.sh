@@ -357,7 +357,7 @@ _EOF_
     }
     EH_assert [[ $# -eq 1 ]]
 
-    lDo vis_deBisosIfy
+    lpDo vis_deBisosIfy
 
     if sysOS_isDeb11 ; then
         lpDo sudo pip3 install --yes bisos.bashStandaloneIcmSeed bisos.provision
