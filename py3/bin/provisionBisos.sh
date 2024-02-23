@@ -336,6 +336,7 @@ _EOF_
     lpDo sudo rm -r -f /var/bisos
 
     lpDo sudo rm -r -f /bxo
+    lpDo sudo rm /tmp/intra-ICM.log  # temporary fix for a bisos.platform bug
 
     if sysOS_isDeb11 ; then
         lpDo sudo pip3 uninstall --yes bisos.bashStandaloneIcmSeed bisos.provision
